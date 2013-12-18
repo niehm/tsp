@@ -5,9 +5,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.extern.java.Log;
 
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * Date: 12/18/13
  *
@@ -22,10 +19,13 @@ public class Node {
     private int x;
     private int y;
 
-    public double distanceTo(Node node){
-        int a = (x > node.getX())? x - node.getX() : node.getX() - x;
-        int b = (y > node.getY())? y - node.getY() : node.getY() - y;
+    public int distanceTo(Node node){
+        int a = x - node.getX();
+        int b = y - node.getY();
 
-        return Math.sqrt(Math.pow(a, 2.0) + Math.pow(b, 2.0));
+        double calculated = Math.sqrt((a*a + b*b)/10);
+        int result = (int) Math.round(calculated );
+
+        return (result < calculated)? result+1 : result;
     }
 }

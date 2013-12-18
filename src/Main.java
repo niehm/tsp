@@ -17,7 +17,7 @@ import java.util.*;
 public class Main {
 
     final private static LinkedList<Node> nodes = new LinkedList<>();
-    final private static Map<Node, Map<Node, Double>> distances = new HashMap<>();
+    final private static Map<Node, Map<Node, Integer>> distances = new HashMap<>();
     private static String name ="";
 
     public static void main(String args[]){
@@ -26,7 +26,7 @@ public class Main {
         Route route = new Route();
         route.greedy(nodes, distances);
 
-        Main.log.info(String.format("Distance of Route: %f%n", route.calculateDistance()));
+        Main.log.info(String.format("Distance of Route: %d%n", route.calculateDistance()));
         Main.log.info(route.getRoute().toString());
     }
 
@@ -63,7 +63,7 @@ public class Main {
 
     private static void calculateDistances(){
         for (Node node : nodes) {
-            Map<Node, Double> nodeXDistance = new HashMap<>(nodes.size()-1);
+            Map<Node, Integer> nodeXDistance = new HashMap<>(nodes.size()-1);
             distances.put(node, nodeXDistance);
 
             for (Node toNode : nodes) {
