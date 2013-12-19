@@ -2,6 +2,7 @@ package de.metal_land.tsp;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.extern.java.Log;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -13,6 +14,7 @@ import java.util.Map;
  * @author nieh
  */
 @NoArgsConstructor
+@Log
 public class Route {
     @Getter
     final private List<Node> route = new LinkedList<>();
@@ -23,7 +25,7 @@ public class Route {
 
     public void greedy(LinkedList<Node> nodes, Map<Node,Map<Node,Integer>> distances){
         route.clear();
-        route.add(nodes.getFirst());
+        addNode(nodes.getFirst());
         nodes.removeFirst();
 
         while(!nodes.isEmpty()){
@@ -40,7 +42,7 @@ public class Route {
             }
 
             nodes.remove(shortestNode);
-            route.add(shortestNode);
+            addNode(shortestNode);
         }
     }
 
@@ -55,8 +57,10 @@ public class Route {
             }
 
             distance += lastNode.distanceTo(node);
+            lastNode = node;
         }
 
+        distance += lastNode.distanceTo(route.get(0));
         return distance;
     }
 }
