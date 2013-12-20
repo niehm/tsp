@@ -6,8 +6,6 @@ import lombok.NoArgsConstructor;
 import lombok.extern.java.Log;
 
 /**
- * Date: 12/18/13
- *
  * @author nieh
  */
 @Data

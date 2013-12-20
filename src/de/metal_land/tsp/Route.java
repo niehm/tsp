@@ -9,8 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Date: 12/18/13
- *
+ * Represents a Set of Nodes in a fixed sequence.
  * @author nieh
  */
 @NoArgsConstructor
@@ -23,30 +22,7 @@ public class Route {
         route.add(node);
     }
 
-    public void greedy(LinkedList<Node> nodes, Map<Node,Map<Node,Integer>> distances){
-        route.clear();
-        addNode(nodes.getFirst());
-        nodes.removeFirst();
-
-        while(!nodes.isEmpty()){
-            Node lastNode = nodes.get(nodes.size()-1);
-            Map<Node,Integer> distanceMap = distances.get(lastNode);
-            Node shortestNode = null;
-            Integer shortestDistance = Integer.MAX_VALUE;
-
-            for (Node node : distanceMap.keySet()) {
-                if(distanceMap.get(node) < shortestDistance) {
-                    shortestDistance = distanceMap.get(node);
-                    shortestNode = node;
-                }
-            }
-
-            nodes.remove(shortestNode);
-            addNode(shortestNode);
-        }
-    }
-
-    public int calculateDistance(){
+    public int getDistance(){
         Node lastNode = null;
         int distance = 0;
 

@@ -1,6 +1,6 @@
-import com.sun.javafx.binding.StringFormatter;
-import de.metal_land.tsp.Node;
-import de.metal_land.tsp.Route;
+package de.metal_land.tsp;
+
+import lombok.Data;
 import lombok.extern.java.Log;
 
 import java.io.File;
@@ -9,28 +9,28 @@ import java.io.FileNotFoundException;
 import java.util.*;
 
 /**
- * Date: 12/18/13
  *
  * @author nieh
  */
 @Log
-public class Main {
+@Data
+public class TSP {
 
-    final private static LinkedList<Node> nodes = new LinkedList<>();
-    final private static Map<Node, Map<Node, Integer>> distances = new HashMap<>();
-    private static String name ="";
+    final private  LinkedList<Node> nodes = new LinkedList<>();
+    final private  Map<Node, Map<Node, Integer>> distances = new HashMap<>();
+    private  String name ="";
 
     public static void main(String args[]){
-        readFromFile();
-        calculateDistances();
-        Route route = new Route();
-        route.greedy(nodes, distances);
+        TSP problem = new TSP();
+        problem.readFromFile();
+        problem.calculateDistances();
+        Route route = problem.greedy(problem.getNodes().getFirst());
 
-        Main.log.info(String.format("Distance of Route: %d%n", route.calculateDistance()));
-        Main.log.info(route.getRoute().toString());
+        TSP.log.info(String.format("Distance of Route: %d%n", route.getDistance()));
+        TSP.log.info(route.getRoute().toString());
     }
 
-    public static void readFromFile(){
+    public void readFromFile(){
         try {
             FileInputStream fr = new FileInputStream(new File("att532.tsp"));
             Scanner scanner = new Scanner(fr);
@@ -61,7 +61,7 @@ public class Main {
     }
 
 
-    private static void calculateDistances(){
+    private void calculateDistances(){
         for (Node node : nodes) {
             Map<Node, Integer> nodeXDistance = new HashMap<>(nodes.size()-1);
             distances.put(node, nodeXDistance);
@@ -72,5 +72,34 @@ public class Main {
 
         }
 
+    }
+
+    public Route greedy(Node startNode){
+        Route route = new Route();
+        List<Node> nodes = new LinkedList<Node>(getNodes());
+        Collections.copy(nodes, getNodes());
+        if(nodes.contains(startNode)) {
+            route.addNode(startNode);
+            nodes.remove(startNode);
+        }
+
+        while(!nodes.isEmpty()){
+            Node lastNode = nodes.get(nodes.size()-1);
+            Map<Node,Integer> distanceMap = distances.get(lastNode);
+            Node shortestNode = null;
+            Integer shortestDistance = Integer.MAX_VALUE;
+
+            for (Node node : distanceMap.keySet()) {
+                if(distanceMap.get(node) < shortestDistance) {
+                    shortestDistance = distanceMap.get(node);
+                    shortestNode = node;
+                }
+            }
+
+            nodes.remove(shortestNode);
+            route.addNode(shortestNode);
+        }
+
+        return route;
     }
 }
