@@ -18,10 +18,18 @@ public class Route {
     @Getter
     final private List<Node> route = new LinkedList<>();
 
+    /**
+     * Add a Node at the end of the Route.
+     * @param node
+     */
     public void addNode(Node node){
         route.add(node);
     }
 
+    /**
+     * Returns the complete distance of the round trip.
+     * @return
+     */
     public int getDistance(){
         Node lastNode = null;
         int distance = 0;

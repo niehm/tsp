@@ -18,11 +18,11 @@ public class TSP {
 
     final private  LinkedList<Node> nodes = new LinkedList<>();
     final private  Map<Node, Map<Node, Integer>> distances = new HashMap<>();
-    private  String name ="";
+    private  String name = "";
 
     public static void main(String args[]){
         TSP problem = new TSP();
-        problem.readFromFile();
+        problem.readFromFile(new File("att532.tsp"));
         problem.calculateDistances();
         Route route = problem.greedy(problem.getNodes().getFirst());
 
@@ -30,9 +30,13 @@ public class TSP {
         TSP.log.info(route.getRoute().toString());
     }
 
-    public void readFromFile(){
+    /**
+     * Reads the Data from the given file.
+     * @param srcFile
+     */
+    public void readFromFile(File srcFile){
         try {
-            FileInputStream fr = new FileInputStream(new File("att532.tsp"));
+            FileInputStream fr = new FileInputStream(srcFile);
             Scanner scanner = new Scanner(fr);
 
             boolean readCoordinates = false;
@@ -60,7 +64,9 @@ public class TSP {
         }
     }
 
-
+    /**
+     * Calculates the Distance from a Node to any other Node.
+     */
     private void calculateDistances(){
         for (Node node : nodes) {
             Map<Node, Integer> nodeXDistance = new HashMap<>(nodes.size()-1);
@@ -74,6 +80,11 @@ public class TSP {
 
     }
 
+    /**
+     * Generates a route in a greedy way.
+     * @param startNode The Node to start from.
+     * @return
+     */
     public Route greedy(Node startNode){
         Route route = new Route();
         List<Node> nodes = new LinkedList<Node>(getNodes());

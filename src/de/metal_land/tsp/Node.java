@@ -17,13 +17,18 @@ public class Node {
     private int x;
     private int y;
 
+    /**
+     * Calculates the distance form this Node to the given target Node.
+     * @param node The target Node.
+     * @return The distance.
+     */
     public int distanceTo(Node node){
         int a = x - node.getX();
         int b = y - node.getY();
 
-        double calculated = Math.sqrt((a*a + b*b)/10);
-        int result = (int) Math.round(calculated );
+        double calculated = Math.sqrt((a * a + b * b) / 10);
+        int result = (int) Math.round(calculated);
 
-        return (result < calculated)? result+1 : result;
+        return (result < calculated)? result + 1 : result;
     }
 }
