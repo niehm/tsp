@@ -3,10 +3,7 @@ package de.metal_land.tsp;
 import lombok.Getter;
 import lombok.extern.java.Log;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 /**
  * Represents a Set of Nodes in a fixed sequence.
@@ -16,6 +13,9 @@ import java.util.List;
 public class Route {
     final private List<Node> route;
 
+    /**
+     * The complete distance of the route as Roundtrip.
+     */
     @Getter
     final private int distance;
 
@@ -46,6 +46,10 @@ public class Route {
         return distance;
     }
 
+    /**
+     * Calculates all neighbors of the route.
+     * @return
+     */
     public Iterable<Route> getNeighbors(){
         List<Route> neighbors = new ArrayList<>();
         List<Node> route = getRoute();
@@ -61,6 +65,9 @@ public class Route {
         return neighbors;
     }
 
+    /**
+     * @return A copy of the route as List.
+     */
     public List<Node> getRoute() {
         return new LinkedList<>(route);
     }
