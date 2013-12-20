@@ -5,6 +5,7 @@ import lombok.extern.java.Log;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -31,7 +32,7 @@ public class Route {
         Node lastNode = null;
         int distance = 0;
 
-        for (Node node : route) {
+        for (Node node : getRoute()) {
             if(lastNode == null){
                 lastNode = node;
                 continue;
@@ -47,10 +48,20 @@ public class Route {
 
     public Iterable<Route> getNeighbors(){
         List<Route> neighbors = new ArrayList<>();
+        List<Node> route = getRoute();
+
+        for(int i=0;i<route.size()-1;i++){
+            List<Node> routeCopy = new ArrayList<>(route);
+            Node n = routeCopy.get(i);
+            routeCopy.set(i, routeCopy.get(i+1));
+            routeCopy.set(i+1, n);
+
+            neighbors.add(new Route(routeCopy));
+        }
         return neighbors;
     }
 
     public List<Node> getRoute() {
-        return Collections.unmodifiableList(route);
+        return new LinkedList<>(route);
     }
 }

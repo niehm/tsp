@@ -26,6 +26,8 @@ public class TSP {
         problem.calculateDistances();
         Route route = problem.greedy(problem.getNodes().getFirst());
 
+        route.getNeighbors();
+
         TSP.log.info(String.format("Distance of Route: %d%n", route.getDistance()));
         TSP.log.info(route.getRoute().toString());
     }
