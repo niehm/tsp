@@ -13,9 +13,9 @@ import lombok.extern.java.Log;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Node {
-    private String name;
-    private int x;
-    private int y;
+    private String name = "";
+    private int x = 0;
+    private int y = 0;
 
     /**
      * Calculates the distance form this Node to the given target Node.

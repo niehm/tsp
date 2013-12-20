@@ -10,14 +10,14 @@ import java.util.*;
  * @author nieh
  */
 @Log
-public class Route {
+public class Route implements Comparable<Route>{
     final private List<Node> route;
 
     /**
      * The complete distance of the route as Roundtrip.
      */
     @Getter
-    final private int distance;
+    final private Integer distance;
 
     public Route(List<Node> route){
         this.route = route;
@@ -26,7 +26,7 @@ public class Route {
 
     /**
      * Calculates the complete distance of the round trip.
-     * @return
+     * @return The calculated Distance.
      */
     private int calculateDistance(){
         Node lastNode = null;
@@ -42,15 +42,18 @@ public class Route {
             lastNode = node;
         }
 
-        distance += lastNode.distanceTo(route.get(0));
+        if (lastNode != null) {
+            distance += lastNode.distanceTo(route.get(0));
+        }
+
         return distance;
     }
 
     /**
      * Calculates all neighbors of the route.
-     * @return
+     * @return A List with all Neighbors.
      */
-    public Iterable<Route> getNeighbors(){
+    public List<Route> getNeighbors(){
         List<Route> neighbors = new ArrayList<>();
         List<Node> route = getRoute();
 
@@ -70,5 +73,10 @@ public class Route {
      */
     public List<Node> getRoute() {
         return new LinkedList<>(route);
+    }
+
+    @Override
+    public int compareTo(Route o) {
+        return getDistance().compareTo(o.getDistance());
     }
 }

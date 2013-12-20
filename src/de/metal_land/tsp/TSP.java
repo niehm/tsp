@@ -26,15 +26,17 @@ public class TSP {
         problem.calculateDistances();
         Route route = problem.greedy(problem.getNodes().getFirst());
 
-        route.getNeighbors();
-
-        TSP.log.info(String.format("Distance of Route: %d%n", route.getDistance()));
+        TSP.log.info(String.format("Distance of Route: %d", route.getDistance()));
         TSP.log.info(route.getRoute().toString());
+
+        List<Route> routes = route.getNeighbors();
+        Collections.sort(routes);
+        TSP.log.info(String.format("Distance of new Route: %d", routes.get(0).getDistance()));
     }
 
     /**
      * Reads the Data from the given file.
-     * @param srcFile
+     * @param srcFile The File to read.
      */
     public void readFromFile(File srcFile){
         try {
@@ -85,7 +87,7 @@ public class TSP {
     /**
      * Generates a route in a greedy way.
      * @param startNode The Node to start from.
-     * @return
+     * @return A new Route.
      */
     public Route greedy(Node startNode){
         List<Node> nodes = new LinkedList<>(getNodes());
@@ -112,7 +114,6 @@ public class TSP {
             routeList.add(shortestNode);
         }
 
-        Route route = new Route(routeList);
-        return route;
+        return new Route(routeList);
     }
 }
