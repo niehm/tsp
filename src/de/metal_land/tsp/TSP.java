@@ -86,11 +86,10 @@ public class TSP {
      * @return
      */
     public Route greedy(Node startNode){
-        Route route = new Route();
-        List<Node> nodes = new LinkedList<Node>(getNodes());
-        Collections.copy(nodes, getNodes());
+        List<Node> nodes = new LinkedList<>(getNodes());
+        List<Node> routeList = new ArrayList<>();
         if(nodes.contains(startNode)) {
-            route.addNode(startNode);
+            routeList.add(startNode);
             nodes.remove(startNode);
         }
 
@@ -108,9 +107,10 @@ public class TSP {
             }
 
             nodes.remove(shortestNode);
-            route.addNode(shortestNode);
+            routeList.add(shortestNode);
         }
 
+        Route route = new Route(routeList);
         return route;
     }
 }

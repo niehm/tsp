@@ -1,36 +1,33 @@
 package de.metal_land.tsp;
 
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.extern.java.Log;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Represents a Set of Nodes in a fixed sequence.
  * @author nieh
  */
-@NoArgsConstructor
 @Log
 public class Route {
     @Getter
-    final private List<Node> route = new LinkedList<>();
+    final private List<Node> route;
 
-    /**
-     * Add a Node at the end of the Route.
-     * @param node
-     */
-    public void addNode(Node node){
-        route.add(node);
+    @Getter
+    final private int distance;
+
+    public Route(List<Node> route){
+        this.route = route;
+        this.distance = calculateDistance();
     }
 
     /**
-     * Returns the complete distance of the round trip.
+     * Calculates the complete distance of the round trip.
      * @return
      */
-    public int getDistance(){
+    private int calculateDistance(){
         Node lastNode = null;
         int distance = 0;
 
@@ -46,5 +43,10 @@ public class Route {
 
         distance += lastNode.distanceTo(route.get(0));
         return distance;
+    }
+
+    public Iterable<Route> getNeighbors(){
+        List<Route> neighbors = new ArrayList<>();
+        return neighbors;
     }
 }
