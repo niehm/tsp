@@ -24,14 +24,13 @@ public class TSP {
         TSP problem = new TSP();
         problem.readFromFile(new File("att532.tsp"));
         problem.calculateDistances();
-        Route route = problem.greedy(problem.getNodes().getFirst());
+        Route bestRoute = problem.greedy(problem.getNodes().getFirst());
 
-        TSP.log.info(String.format("Distance of Route: %d", route.getDistance()));
-        TSP.log.info(route.getRoute().toString());
+        TSP.log.info(String.format("Distance of Route: %d", bestRoute.getDistance()));
+        TSP.log.info(bestRoute.getRoute().toString());
 
-        List<Route> routes = route.getNeighbors();
-        Collections.sort(routes);
-        TSP.log.info(String.format("Distance of new Route: %d", routes.get(0).getDistance()));
+        bestRoute = problem.localSearch(bestRoute);
+        TSP.log.info(String.format("Distance of Route after TabuSearch: %d", bestRoute.getDistance()));
     }
 
     /**
@@ -115,5 +114,16 @@ public class TSP {
         }
 
         return new Route(routeList);
+    }
+
+    public Route localSearch(Route route){
+        List<Route> neighbors = route.getNeighbors();
+        Collections.sort(neighbors);
+
+        if(!route.getDistance().equals(neighbors.get(0).getDistance())){
+            route = localSearch(neighbors.get(0));
+        }
+
+        return route;
     }
 }
