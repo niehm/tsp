@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.extern.java.Log;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -12,7 +13,6 @@ import java.util.List;
  */
 @Log
 public class Route {
-    @Getter
     final private List<Node> route;
 
     @Getter
@@ -48,5 +48,9 @@ public class Route {
     public Iterable<Route> getNeighbors(){
         List<Route> neighbors = new ArrayList<>();
         return neighbors;
+    }
+
+    public List<Node> getRoute() {
+        return Collections.unmodifiableList(route);
     }
 }
