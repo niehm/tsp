@@ -1,6 +1,9 @@
 package de.metal_land.tsp;
 
 import lombok.Data;
+import lombok.Getter;
+import lombok.NonNull;
+import lombok.Setter;
 import lombok.extern.java.Log;
 
 import java.io.File;
@@ -19,18 +22,32 @@ public class TSP {
     final private  LinkedList<Node> nodes = new LinkedList<>();
     final private  Map<Node, Map<Node, Integer>> distances = new HashMap<>();
     private  String name = "";
+    private Route bestRoute;
+
+    @Setter
+    @Getter
+    @NonNull
+    private int tabuListMaxSize = 1000;
+
+    @Setter
+    @Getter
+    @NonNull
+    private int maxBadRoutes = 3000;
 
     public static void main(String args[]){
         TSP problem = new TSP();
         problem.readFromFile(new File("att532.tsp"));
         problem.calculateDistances();
-        Route bestRoute = problem.greedy(problem.getNodes().getFirst());
+        problem.greedy(problem.getNodes().getFirst());
 
-        TSP.log.info(String.format("Distance of Route: %d", bestRoute.getDistance()));
-        TSP.log.info(bestRoute.getRoute().toString());
+        TSP.log.info(String.format("Distance of Route: %d", problem.getBestRoute().getDistance()));
+        TSP.log.info(problem.getBestRoute().getRoute().toString());
 
-        bestRoute = problem.localSearch(bestRoute);
-        TSP.log.info(String.format("Distance of Route after TabuSearch: %d", bestRoute.getDistance()));
+        problem.localSearch();
+        TSP.log.info(String.format("Distance of Route after local Search: %d", problem.getBestRoute().getDistance()));
+
+        problem.tabuSearch();
+        TSP.log.info(String.format("Distance of Route after tabu Search: %d", problem.getBestRoute().getDistance()));
     }
 
     /**
@@ -88,7 +105,7 @@ public class TSP {
      * @param startNode The Node to start from.
      * @return A new Route.
      */
-    public Route greedy(Node startNode){
+    public void greedy(Node startNode){
         List<Node> nodes = new LinkedList<>(getNodes());
         List<Node> routeList = new ArrayList<>();
         if(nodes.contains(startNode)) {
@@ -113,17 +130,52 @@ public class TSP {
             routeList.add(shortestNode);
         }
 
-        return new Route(routeList);
+        bestRoute = new Route(routeList);
     }
 
-    public Route localSearch(Route route){
-        List<Route> neighbors = route.getNeighbors();
-        Collections.sort(neighbors);
+    /**
+     * Search in the Neighborhood for better routes.
+     */
+    public void localSearch(){
+        Route neighbor = bestRoute.getBestNeighbor();
 
-        if(!route.getDistance().equals(neighbors.get(0).getDistance())){
-            route = localSearch(neighbors.get(0));
+        if(neighbor.getDistance() < bestRoute.getDistance()){
+            bestRoute = neighbor;
+            localSearch();
+        }
+    }
+
+    private int badRoutes = 0;
+
+    /**
+     * Search in the Neighborhood for better routes, using a tabu list for already taken routes.
+     */
+    public void tabuSearch(){
+        Deque<Node[]> tabuList = new LinkedList<>();
+        tabuSearch(bestRoute, tabuList);
+    }
+
+    /**
+     * Search in the Neighborhood for better routes, using a tabu list for already taken routes.
+     * @param route The route to optimize.
+     * @param tabuList The prohibited changes.
+     * @return The best route found.
+     */
+    private void tabuSearch(Route route, Deque<Node[]> tabuList){
+        Route neighbor = route.getBestNeighbor(tabuList);
+
+        if(tabuList.size() > tabuListMaxSize){
+            tabuList.removeLast();
         }
 
-        return route;
+        if(bestRoute.compareTo(neighbor) > 0){
+            bestRoute = neighbor;
+            badRoutes = 0;
+        } else {
+            badRoutes++;
+        }
+        if(badRoutes < maxBadRoutes) {
+            tabuSearch(neighbor, tabuList);
+        }
     }
 }
