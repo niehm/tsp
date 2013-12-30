@@ -43,7 +43,7 @@ public class Route implements Comparable<Route>{
         }
 
         if (lastNode != null) {
-            distance += lastNode.distanceTo(route.get(0));
+            distance += lastNode.distanceTo(getRoute().get(0));
         }
 
         return distance;
@@ -70,6 +70,11 @@ public class Route implements Comparable<Route>{
         return neighbors.get(0);
     }
 
+    /**
+     * Get the best neigbhor, who is not on the tabu list.
+     * @param tabuList The list with forbidden changes.
+     * @return The bests neighbor.
+     */
     public Route getBestNeighbor(Deque<Node[]> tabuList){
         List<Route> neighbors = new ArrayList<>();
         List<Node> route = getRoute();

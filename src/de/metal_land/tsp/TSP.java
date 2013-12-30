@@ -103,7 +103,6 @@ public class TSP {
     /**
      * Generates a route in a greedy way.
      * @param startNode The Node to start from.
-     * @return A new Route.
      */
     public void greedy(Node startNode){
         List<Node> nodes = new LinkedList<>(getNodes());
@@ -139,7 +138,7 @@ public class TSP {
     public void localSearch(){
         Route neighbor = bestRoute.getBestNeighbor();
 
-        if(neighbor.getDistance() < bestRoute.getDistance()){
+        if(bestRoute.compareTo(neighbor) > 0){
             bestRoute = neighbor;
             localSearch();
         }
@@ -159,7 +158,6 @@ public class TSP {
      * Search in the Neighborhood for better routes, using a tabu list for already taken routes.
      * @param route The route to optimize.
      * @param tabuList The prohibited changes.
-     * @return The best route found.
      */
     private void tabuSearch(Route route, Deque<Node[]> tabuList){
         Route neighbor = route.getBestNeighbor(tabuList);
@@ -174,6 +172,7 @@ public class TSP {
         } else {
             badRoutes++;
         }
+
         if(badRoutes < maxBadRoutes) {
             tabuSearch(neighbor, tabuList);
         }
