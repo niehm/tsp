@@ -1,9 +1,6 @@
 package de.metal_land.tsp;
 
-import lombok.Data;
-import lombok.Getter;
-import lombok.NonNull;
-import lombok.Setter;
+import lombok.*;
 import lombok.extern.java.Log;
 
 import java.io.File;
@@ -18,27 +15,31 @@ import java.util.*;
 @Log
 @Data
 public class TSP {
-
+    @Getter(AccessLevel.NONE)
+    private Gui.DataChangedEventListener listener = null;
     final private  LinkedList<Node> nodes = new LinkedList<>();
     final private  Map<Node, Map<Node, Integer>> distances = new HashMap<>();
     private  String name = "";
+
+    @Setter(AccessLevel.NONE)
     private Route bestRoute;
 
-    @Setter
-    @Getter
     @NonNull
-    private int tabuListMaxSize = 1000;
+    private int tabuListMaxSize = 5000;
 
-    @Setter
-    @Getter
     @NonNull
     private int maxBadRoutes = 3000;
 
     public static void main(String args[]){
         TSP problem = new TSP();
         problem.readFromFile(new File("att532.tsp"));
+
         problem.calculateDistances();
         problem.greedy(problem.getNodes().getFirst());
+
+        // Start UI thread
+        Gui gui = new Gui(problem);
+        new Thread(gui).start();
 
         TSP.log.info(String.format("Distance of Route: %d", problem.getBestRoute().getDistance()));
         TSP.log.info(problem.getBestRoute().getRoute().toString());
@@ -129,7 +130,7 @@ public class TSP {
             routeList.add(shortestNode);
         }
 
-        bestRoute = new Route(routeList);
+        setBestRoute(new Route(routeList));
     }
 
     /**
@@ -139,11 +140,13 @@ public class TSP {
         Route neighbor = bestRoute.getBestNeighbor();
 
         if(bestRoute.compareTo(neighbor) > 0){
-            bestRoute = neighbor;
+            setBestRoute(neighbor);
             localSearch();
         }
     }
 
+    @Getter(AccessLevel.NONE)
+    @Setter(AccessLevel.NONE)
     private int badRoutes = 0;
 
     /**
@@ -167,14 +170,34 @@ public class TSP {
         }
 
         if(bestRoute.compareTo(neighbor) > 0){
-            bestRoute = neighbor;
+            setBestRoute(neighbor);
             badRoutes = 0;
         } else {
+            routeChanged(neighbor);
             badRoutes++;
         }
 
         if(badRoutes < maxBadRoutes) {
             tabuSearch(neighbor, tabuList);
+        }
+    }
+
+    /**
+     * Sets the new best route found and fires the route changed event.
+     * @param newRoute The new Route.
+     */
+    private void setBestRoute(Route newRoute){
+        bestRoute = newRoute;
+        routeChanged(newRoute);
+    }
+
+    /**
+     * Should be called if the current route has changed. Normally for redrawing.
+     * @param route The new current route.
+     */
+    private void routeChanged(Route route){
+        if(listener != null){
+            listener.changed(route);
         }
     }
 }

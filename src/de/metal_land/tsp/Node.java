@@ -1,8 +1,6 @@
 package de.metal_land.tsp;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.extern.java.Log;
 
 /**
@@ -13,8 +11,13 @@ import lombok.extern.java.Log;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Node {
+    @Setter(AccessLevel.NONE)
     private String name = "";
+
+    @Setter(AccessLevel.NONE)
     private int x = 0;
+
+    @Setter(AccessLevel.NONE)
     private int y = 0;
 
     /**
