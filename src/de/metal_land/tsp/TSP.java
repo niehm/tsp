@@ -18,7 +18,7 @@ public class TSP {
     @Getter(AccessLevel.NONE)
     private Gui.DataChangedEventListener listener = null;
     final private  LinkedList<Node> nodes = new LinkedList<>();
-    final private  Map<Node, Map<Node, Integer>> distances = new HashMap<>();
+    final private  Map<Node, TreeMap<Node, Integer>> distances = new HashMap<>();
     private  String name = "";
 
     @Setter(AccessLevel.NONE)
@@ -90,13 +90,17 @@ public class TSP {
      */
     private void calculateDistances(){
         for (Node node : nodes) {
-            Map<Node, Integer> nodeXDistance = new HashMap<>(nodes.size()-1);
-            distances.put(node, nodeXDistance);
+            TreeMap<Node, Integer> nodeXDistance = new TreeMap<>();
 
             for (Node toNode : nodes) {
-                nodeXDistance.put(toNode, node.distanceTo(toNode));
+                if(!toNode.equals(node)){
+                    nodeXDistance.put(toNode, node.distanceTo(toNode));
+                }
             }
 
+            TreeMap<Node, Integer> sortedNodeXDistance = new TreeMap<>(new ValueComparator(nodeXDistance));
+            sortedNodeXDistance.putAll(nodeXDistance);
+            distances.put(node, sortedNodeXDistance);
         }
 
     }
@@ -108,26 +112,26 @@ public class TSP {
     public void greedy(Node startNode){
         List<Node> nodes = new LinkedList<>(getNodes());
         List<Node> routeList = new ArrayList<>();
-        if(nodes.contains(startNode)) {
-            routeList.add(startNode);
-            nodes.remove(startNode);
-        }
+
+        routeList.add(startNode);
+        nodes.remove(startNode);
+
+        Node lastNode = routeList.get(0);
 
         while(!nodes.isEmpty()){
-            Node lastNode = nodes.get(nodes.size()-1);
-            Map<Node,Integer> distanceMap = distances.get(lastNode);
+            TreeMap<Node,Integer> distanceMap = distances.get(lastNode);
             Node shortestNode = null;
-            Integer shortestDistance = Integer.MAX_VALUE;
 
-            for (Node node : distanceMap.keySet()) {
-                if(distanceMap.get(node) < shortestDistance) {
-                    shortestDistance = distanceMap.get(node);
+            for (Node node : distanceMap.navigableKeySet()){
+                if(!routeList.contains(node)) {
                     shortestNode = node;
+                    break;
                 }
             }
 
             nodes.remove(shortestNode);
             routeList.add(shortestNode);
+            lastNode = shortestNode;
         }
 
         setBestRoute(new Route(routeList));
@@ -198,6 +202,19 @@ public class TSP {
     private void routeChanged(Route route){
         if(listener != null){
             listener.changed(route);
+        }
+    }
+
+    @AllArgsConstructor
+    private class ValueComparator implements Comparator<Node> {
+        private Map<Node, Integer> base;
+
+        public int compare(Node a, Node b) {
+            if (base.get(a) >= base.get(b)) {
+                return 1;
+            } else {
+                return -1;
+            }
         }
     }
 }

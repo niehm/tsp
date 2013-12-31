@@ -10,7 +10,7 @@ import lombok.extern.java.Log;
 @Log
 @AllArgsConstructor
 @NoArgsConstructor
-public class Node {
+public class Node implements Comparable<Node>{
     @Setter(AccessLevel.NONE)
     private String name = "";
 
@@ -33,5 +33,10 @@ public class Node {
         int result = (int) Math.round(calculated);
 
         return (result < calculated)? result + 1 : result;
+    }
+
+    @Override
+    public int compareTo(Node o) {
+        return getName().compareTo(o.getName());
     }
 }

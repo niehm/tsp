@@ -11,7 +11,6 @@ public class Gui implements Runnable{
     private TSP tsp;
     private Route routeToDraw;
     private JFrame window;
-    private TspPanel panel;
     private int repaints = 0;
     private Label repaintCounter;
 
@@ -31,9 +30,9 @@ public class Gui implements Runnable{
      */
     private void createWindow(){
         window = new JFrame("TSP");
-        window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        window.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
-        panel = new TspPanel();
+        TspPanel panel = new TspPanel();
         window.add(panel, BorderLayout.CENTER);
 
         repaintCounter = new Label("Repaints: ");
