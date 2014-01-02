@@ -28,7 +28,7 @@ public class TSP {
     private int tabuListMaxSize = 5000;
 
     @NonNull
-    private int maxBadRoutes = 3000;
+    private int maxBadRoutes = 8000;
 
     public static void main(String args[]){
         TSP problem = new TSP();
@@ -210,7 +210,7 @@ public class TSP {
         private Map<Node, Integer> base;
 
         public int compare(Node a, Node b) {
-            if (base.get(a) >= base.get(b)) {
+            if (base.get(a) > base.get(b)) {
                 return 1;
             } else {
                 return -1;

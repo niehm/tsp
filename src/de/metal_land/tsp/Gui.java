@@ -35,7 +35,7 @@ public class Gui implements Runnable{
         TspPanel panel = new TspPanel();
         window.add(panel, BorderLayout.CENTER);
 
-        repaintCounter = new Label("Repaints: ");
+        repaintCounter = new Label("Repaints: 0  Distance: 0");
         window.add(repaintCounter, BorderLayout.PAGE_END);
 
         //window.setExtendedState(window.getExtendedState() | JFrame.MAXIMIZED_BOTH);
@@ -100,7 +100,7 @@ public class Gui implements Runnable{
                         (int) Math.round(firstNode.getX() / factorX) + 12,
                         (int) Math.round(firstNode.getY() / factorY) + 12);
             }
-            repaintCounter.setText(String.format("Repaints: %d", repaints));
+            repaintCounter.setText(String.format("Repaints: %5d  Distance: %6d  Best: %6d", repaints, routeToDraw.getDistance(), tsp.getBestRoute().getDistance()));
             repaints++;
         }
 
