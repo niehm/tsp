@@ -28,18 +28,18 @@ public class TSP {
     private int tabuListMaxSize = 500;
 
     @NonNull
-    private int maxBadRoutes = 8000;
+    private int maxBadRoutes = 1000;
 
     public static void main(String args[]){
         TSP problem = new TSP();
         problem.readFromFile(new File("att532.tsp"));
 
-        problem.calculateDistances();
-        problem.greedy(problem.getNodes().getFirst());
-
         // Start UI thread
         Gui gui = new Gui(problem);
         new Thread(gui).start();
+
+        problem.calculateDistances();
+        problem.greedy();
 
         TSP.log.info(String.format("Distance of Route: %d", problem.getBestRoute().getDistance()));
         TSP.log.info(problem.getBestRoute().getRoute().toString());
@@ -109,34 +109,43 @@ public class TSP {
 
     /**
      * Generates a route in a greedy way.
-     * @param startNode The Node to start from.
      */
-    public void greedy(Node startNode){
-        List<Node> nodes = new LinkedList<>(getNodes());
-        List<Node> routeList = new ArrayList<>();
+    public void greedy(){
+        for(int i = 0; i < nodes.size(); i++){
+            List<Node> nodes = new LinkedList<>(getNodes());
+            List<Node> routeList = new ArrayList<>();
+            Node startNode = nodes.get(i);
 
-        routeList.add(startNode);
-        nodes.remove(startNode);
+            routeList.add(startNode);
+            nodes.remove(startNode);
 
-        Node lastNode = routeList.get(0);
+            Node lastNode = routeList.get(0);
 
-        while(!nodes.isEmpty()){
-            TreeMap<Node,Integer> distanceMap = distances.get(lastNode);
-            Node shortestNode = null;
+            while(!nodes.isEmpty()){
+                TreeMap<Node,Integer> distanceMap = distances.get(lastNode);
+                Node shortestNode = null;
 
-            for (Node node : distanceMap.navigableKeySet()){
-                if(!routeList.contains(node)) {
-                    shortestNode = node;
-                    break;
+                for (Node node : distanceMap.navigableKeySet()){
+                    if(!routeList.contains(node)) {
+                        shortestNode = node;
+                        break;
+                    }
                 }
+
+                nodes.remove(shortestNode);
+                routeList.add(shortestNode);
+                lastNode = shortestNode;
             }
 
-            nodes.remove(shortestNode);
-            routeList.add(shortestNode);
-            lastNode = shortestNode;
-        }
+            Route route = new Route(routeList);
 
-        setBestRoute(new Route(routeList));
+            if(bestRoute == null){
+                setBestRoute(route);
+            }
+            else if(route.compareTo(bestRoute) < 0){
+                setBestRoute(route);
+            }
+        }
     }
 
     /**
@@ -161,6 +170,7 @@ public class TSP {
     public void tabuSearch(){
         Deque<Node[]> tabuList = new LinkedList<>();
         tabuSearch(bestRoute, tabuList);
+        routeChanged(bestRoute);
     }
 
     /**

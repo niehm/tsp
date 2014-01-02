@@ -78,30 +78,32 @@ public class Gui implements Runnable{
                         (int) Math.round(node.getY() / factorY) + 10, 4, 4, 4, 4);
             }
 
-            Node lastNode = null;
-            for (Node node : routeToDraw.getRoute()) {
-                if(lastNode == null){
+            if(routeToDraw != null){
+                Node lastNode = null;
+                for (Node node : routeToDraw.getRoute()) {
+                    if(lastNode == null){
+                        lastNode = node;
+                        continue;
+                    }
+
+                    g.drawLine((int) Math.round(lastNode.getX() / factorX) + 12,
+                            (int) Math.round(lastNode.getY() / factorY) + 12,
+                            (int) Math.round(node.getX() / factorX) + 12,
+                            (int) Math.round(node.getY() / factorY) + 12);
+
                     lastNode = node;
-                    continue;
                 }
 
-                g.drawLine((int) Math.round(lastNode.getX() / factorX) + 12,
-                        (int) Math.round(lastNode.getY() / factorY) + 12,
-                        (int) Math.round(node.getX() / factorX) + 12,
-                        (int) Math.round(node.getY() / factorY) + 12);
-
-                lastNode = node;
+                if(lastNode != null){
+                    Node firstNode = routeToDraw.getRoute().get(0);
+                    g.drawLine((int) Math.round(lastNode.getX() / factorX) + 12,
+                            (int) Math.round(lastNode.getY() / factorY) + 12,
+                            (int) Math.round(firstNode.getX() / factorX) + 12,
+                            (int) Math.round(firstNode.getY() / factorY) + 12);
+                }
+                repaintCounter.setText(String.format("Repaints: %5d  Distance: %6d  Best: %6d", repaints, routeToDraw.getDistance(), tsp.getBestRoute().getDistance()));
+                repaints++;
             }
-
-            if(lastNode != null){
-                Node firstNode = routeToDraw.getRoute().get(0);
-                g.drawLine((int) Math.round(lastNode.getX() / factorX) + 12,
-                        (int) Math.round(lastNode.getY() / factorY) + 12,
-                        (int) Math.round(firstNode.getX() / factorX) + 12,
-                        (int) Math.round(firstNode.getY() / factorY) + 12);
-            }
-            repaintCounter.setText(String.format("Repaints: %5d  Distance: %6d  Best: %6d", repaints, routeToDraw.getDistance(), tsp.getBestRoute().getDistance()));
-            repaints++;
         }
 
         @Override
