@@ -25,7 +25,7 @@ public class TSP {
     private Route bestRoute;
 
     @NonNull
-    private int tabuListMaxSize = 5000;
+    private int tabuListMaxSize = 500;
 
     @NonNull
     private int maxBadRoutes = 8000;
@@ -44,8 +44,8 @@ public class TSP {
         TSP.log.info(String.format("Distance of Route: %d", problem.getBestRoute().getDistance()));
         TSP.log.info(problem.getBestRoute().getRoute().toString());
 
-        problem.localSearch();
-        TSP.log.info(String.format("Distance of Route after local Search: %d", problem.getBestRoute().getDistance()));
+        //problem.localSearch();
+        //TSP.log.info(String.format("Distance of Route after local Search: %d", problem.getBestRoute().getDistance()));
 
         problem.tabuSearch();
         TSP.log.info(String.format("Distance of Route after tabu Search: %d", problem.getBestRoute().getDistance()));
@@ -80,6 +80,8 @@ public class TSP {
                     nodes.add(new Node(splitted[0], Integer.parseInt(splitted[1]), Integer.parseInt(splitted[2])));
                 }
             }
+
+            setTabuListMaxSize(nodes.size());
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
