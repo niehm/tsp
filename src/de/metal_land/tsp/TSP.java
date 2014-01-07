@@ -12,7 +12,6 @@ import java.io.FileNotFoundException;
 import java.util.*;
 
 /**
- *
  * @author nieh
  */
 @Log
@@ -46,9 +45,6 @@ public class TSP {
 
         TSP.log.info(String.format("Distance of Route: %d", problem.getBestRoute().getDistance()));
         TSP.log.info(problem.getBestRoute().getRoute().toString());
-
-        //problem.localSearch();
-        //TSP.log.info(String.format("Distance of Route after local Search: %d", problem.getBestRoute().getDistance()));
 
         problem.tabuSearch();
         TSP.log.info(String.format("Distance of Route after tabu Search: %d", problem.getBestRoute().getDistance()));
@@ -148,18 +144,6 @@ public class TSP {
         }
     }
 
-    /**
-     * Search in the Neighborhood for better routes.
-     */
-    public void localSearch(){
-        Route neighbor = optimize(bestRoute.getBestNeighbor());
-
-        if(bestRoute.compareTo(neighbor) > 0){
-            setBestRoute(neighbor);
-            localSearch();
-        }
-    }
-
     @Getter(AccessLevel.NONE)
     @Setter(AccessLevel.NONE)
     private int badRoutes = 0;
@@ -217,27 +201,21 @@ public class TSP {
         }
     }
 
-    @AllArgsConstructor
-    private class ValueComparator implements Comparator<Node> {
-        private Map<Node, Integer> base;
-
-        public int compare(Node a, Node b) {
-            if (base.get(a) > base.get(b)) {
-                return 1;
-            } else {
-                return -1;
-            }
-        }
-    }
-
+    /**
+     * Optimize the route by removing loops.
+     * @param route The route to optimize.
+     * @return The optimized route.
+     */
     private Route optimize(Route route){
         List<Node> routeList = route.getRoute();
         List<Node> modifiedList = new ArrayList<>(routeList.size());
         int distance = 10;
 
+        // checks all nodes or until a loop is resolved
         for (Node currentNode : routeList) {
             int currentIndex = routeList.indexOf(currentNode);
 
+            // don't move over the end of the array
             if(currentIndex >= routeList.size()-distance) { break; }
 
             Line2D line = new Line2D.Float(currentNode.getX(),
@@ -256,6 +234,7 @@ public class TSP {
                     List<Node> reversePart = Util.reverseList(Util.sublist(routeList, currentIndex+1, index+1));
                     List<Node> part2 = Util.sublist(routeList, index+1, routeList.size());
 
+                    //assemble the new list
                     modifiedList.addAll(part1);
                     modifiedList.addAll(reversePart);
                     modifiedList.addAll(part2);
@@ -266,13 +245,13 @@ public class TSP {
             if(modifiedList.size()>0) { break; }
         }
 
-        Route newRoute = (modifiedList.size() == routeList.size())? new Route(modifiedList) : route;
-
         if(modifiedList.size()>0) {
+            Route newRoute = new Route(modifiedList);
             log.info(String.format("Old Route: %d  New Route: %d", route.getDistance(), newRoute.getDistance()));
+            return optimize(newRoute);
+        } else {
+            return route;
         }
-
-        return (modifiedList.size() > 0)?  optimize(newRoute) : newRoute;
     }
 
     /**
@@ -281,5 +260,21 @@ public class TSP {
      */
     public void setTabuListMaxSize(int size){
         tabuListMaxSize = (size > 20)? size : 20;
+    }
+
+    /**
+     * A comparator to sort a map by the Value.
+     */
+    @AllArgsConstructor
+    private class ValueComparator implements Comparator<Node> {
+        private Map<Node, Integer> base;
+
+        public int compare(Node a, Node b) {
+            if (base.get(a) > base.get(b)) {
+                return 1;
+            } else {
+                return -1;
+            }
+        }
     }
 }

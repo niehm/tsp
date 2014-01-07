@@ -4,6 +4,7 @@ import lombok.*;
 import lombok.extern.java.Log;
 
 /**
+ * A node in a Route represented by the X and Y values.
  * @author nieh
  */
 @Data

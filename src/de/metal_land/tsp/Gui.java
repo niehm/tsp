@@ -38,7 +38,6 @@ public class Gui implements Runnable{
         repaintCounter = new Label("Repaints: 0  Distance: 0");
         window.add(repaintCounter, BorderLayout.PAGE_END);
 
-        //window.setExtendedState(window.getExtendedState() | JFrame.MAXIMIZED_BOTH);
         window.pack();
         window.setVisible(true);
 

@@ -113,6 +113,12 @@ public class Route implements Comparable<Route>{
         return neighbors.get(0);
     }
 
+    /**
+     * Adds some random Neighbors to the List.
+     * @param tabuList The list with forbidden changes.
+     * @param changes A map to which the changed values should be added.
+     * @return A random neighbor route.
+     */
     private Route addBestRandomNeighbor(Deque<Node[]> tabuList, Map<Route, Node[]> changes) {
         List<Route> neighbors = new ArrayList<>();
         List<Node> route = getRoute();
