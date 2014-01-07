@@ -120,7 +120,7 @@ public class Route implements Comparable<Route>{
 
         // Add some random generated routes
         final Random rnd = new Random();
-        for(int i = 0; i<getRoute().size() * 0.5; i++){
+        for(int i = 0; i<getRoute().size() * 1; i++){
             List<Node> routeCopy = new ArrayList<>(route);
             int first = rnd.nextInt(routeCopy.size());
             int second = rnd.nextInt(routeCopy.size());

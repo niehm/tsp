@@ -1,8 +1,11 @@
 package de.metal_land.tsp;
 
+import com.sun.javafx.binding.StringFormatter;
+import de.metal_land.Util;
 import lombok.*;
 import lombok.extern.java.Log;
 
+import java.awt.geom.Line2D;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -25,10 +28,10 @@ public class TSP {
     private Route bestRoute;
 
     @NonNull
-    private int tabuListMaxSize = 500;
+    private int tabuListMaxSize = 100;
 
     @NonNull
-    private int maxBadRoutes = 1000;
+    private int maxBadRoutes = 2000;
 
     public static void main(String args[]){
         TSP problem = new TSP();
@@ -81,7 +84,7 @@ public class TSP {
                 }
             }
 
-            setTabuListMaxSize(nodes.size());
+            setTabuListMaxSize((int) (nodes.size()* 0.15));
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
@@ -139,10 +142,7 @@ public class TSP {
 
             Route route = new Route(routeList);
 
-            if(bestRoute == null){
-                setBestRoute(route);
-            }
-            else if(route.compareTo(bestRoute) < 0){
+            if(bestRoute == null || route.compareTo(bestRoute) < 0){
                 setBestRoute(route);
             }
         }
@@ -152,7 +152,7 @@ public class TSP {
      * Search in the Neighborhood for better routes.
      */
     public void localSearch(){
-        Route neighbor = bestRoute.getBestNeighbor();
+        Route neighbor = optimize(bestRoute.getBestNeighbor());
 
         if(bestRoute.compareTo(neighbor) > 0){
             setBestRoute(neighbor);
@@ -179,7 +179,7 @@ public class TSP {
      * @param tabuList The prohibited changes.
      */
     private void tabuSearch(Route route, Deque<Node[]> tabuList){
-        Route neighbor = route.getBestNeighbor(tabuList);
+        Route neighbor = optimize(route.getBestNeighbor(tabuList));
 
         if(tabuList.size() > tabuListMaxSize){
             tabuList.removeLast();
@@ -228,5 +228,58 @@ public class TSP {
                 return -1;
             }
         }
+    }
+
+    private Route optimize(Route route){
+        List<Node> routeList = route.getRoute();
+        List<Node> modifiedList = new ArrayList<>(routeList.size());
+        int distance = 10;
+
+        for (Node currentNode : routeList) {
+            int currentIndex = routeList.indexOf(currentNode);
+
+            if(currentIndex >= routeList.size()-distance) { break; }
+
+            Line2D line = new Line2D.Float(currentNode.getX(),
+                    currentNode.getY(),
+                    routeList.get(currentIndex+1).getX(),
+                    routeList.get(currentIndex+1).getY());
+
+            int index = currentIndex + 2;
+            for(int i=0;i<distance;i++){
+                Node node = routeList.get(index);
+                Node nodeNext = routeList.get(index+1);
+
+                if(line.intersectsLine(node.getX(), node.getY(), nodeNext.getX(), nodeNext.getY())){
+                    List<Node> part1 = Util.sublist(routeList, 0, currentIndex+1);
+                    //reverse the looped part
+                    List<Node> reversePart = Util.reverseList(Util.sublist(routeList, currentIndex+1, index+1));
+                    List<Node> part2 = Util.sublist(routeList, index+1, routeList.size());
+
+                    modifiedList.addAll(part1);
+                    modifiedList.addAll(reversePart);
+                    modifiedList.addAll(part2);
+                    break;
+                }
+            }
+
+            if(modifiedList.size()>0) { break; }
+        }
+
+        Route newRoute = (modifiedList.size() == routeList.size())? new Route(modifiedList) : route;
+
+        if(modifiedList.size()>0) {
+            log.info(String.format("Old Route: %d  New Route: %d", route.getDistance(), newRoute.getDistance()));
+        }
+
+        return (modifiedList.size() > 0)?  optimize(newRoute) : newRoute;
+    }
+
+    /**
+     * Sets the maxsize for the tabu search tabulist. Min value is 20.
+     * @param size The new size.
+     */
+    public void setTabuListMaxSize(int size){
+        tabuListMaxSize = (size > 20)? size : 20;
     }
 }
