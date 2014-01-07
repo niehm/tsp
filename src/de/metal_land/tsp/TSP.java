@@ -48,6 +48,7 @@ public class TSP {
 
         problem.tabuSearch();
         TSP.log.info(String.format("Distance of Route after tabu Search: %d", problem.getBestRoute().getDistance()));
+        problem.routeChanged(problem.getBestRoute());
     }
 
     /**
@@ -148,37 +149,36 @@ public class TSP {
     @Setter(AccessLevel.NONE)
     private int badRoutes = 0;
 
+    @Getter(AccessLevel.NONE)
+    @Setter(AccessLevel.NONE)
+    private Route currentRoute = null;
+
+    @Getter(AccessLevel.NONE)
+    @Setter(AccessLevel.NONE)
+    private Deque<Node[]> tabuList = new LinkedList<>();;
+
     /**
      * Search in the Neighborhood for better routes, using a tabu list for already taken routes.
      */
     public void tabuSearch(){
-        Deque<Node[]> tabuList = new LinkedList<>();
-        tabuSearch(bestRoute, tabuList);
-        routeChanged(bestRoute);
-    }
+        if(currentRoute == null) { currentRoute = bestRoute; }
 
-    /**
-     * Search in the Neighborhood for better routes, using a tabu list for already taken routes.
-     * @param route The route to optimize.
-     * @param tabuList The prohibited changes.
-     */
-    private void tabuSearch(Route route, Deque<Node[]> tabuList){
-        Route neighbor = optimize(route.getBestNeighbor(tabuList));
+        currentRoute = optimize(currentRoute.getBestNeighbor(tabuList));
 
         if(tabuList.size() > tabuListMaxSize){
             tabuList.removeLast();
         }
 
-        if(bestRoute.compareTo(neighbor) > 0){
-            setBestRoute(neighbor);
+        if(bestRoute.compareTo(currentRoute) > 0){
+            setBestRoute(currentRoute);
             badRoutes = 0;
         } else {
-            routeChanged(neighbor);
+            routeChanged(currentRoute);
             badRoutes++;
         }
 
         if(badRoutes < maxBadRoutes) {
-            tabuSearch(neighbor, tabuList);
+            tabuSearch();
         }
     }
 
@@ -209,14 +209,17 @@ public class TSP {
     private Route optimize(Route route){
         List<Node> routeList = route.getRoute();
         List<Node> modifiedList = new ArrayList<>(routeList.size());
-        int distance = 10;
+        int distance = 20;
 
         // checks all nodes or until a loop is resolved
         for (Node currentNode : routeList) {
             int currentIndex = routeList.indexOf(currentNode);
 
             // don't move over the end of the array
-            if(currentIndex >= routeList.size()-distance) { break; }
+            if(currentIndex >= routeList.size()-distance) {
+                distance--;
+                if(distance <= 4) { break; }
+            }
 
             Line2D line = new Line2D.Float(currentNode.getX(),
                     currentNode.getY(),
