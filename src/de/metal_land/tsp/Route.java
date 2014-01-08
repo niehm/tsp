@@ -75,10 +75,10 @@ public class Route implements Comparable<Route>{
      * @param tabuList The list with forbidden changes.
      * @return The bests neighbor.
      */
-    public Route getBestNeighbor(Deque<Node[]> tabuList){
-        List<Route> neighbors = new ArrayList<>();
-        List<Node> route = getRoute();
-        Map<Route, Node[]> changes = new HashMap<>();
+    public Route getBestNeighbor(final Deque<Node[]> tabuList){
+        final List<Route> neighbors = new ArrayList<>();
+        final List<Node> route = getRoute();
+        final Map<Route, Node[]> changes = new HashMap<>();
 
         for(int i=0;i<route.size()-1;i++){
             List<Node> routeCopy = new ArrayList<>(route);
@@ -104,7 +104,28 @@ public class Route implements Comparable<Route>{
                 neighbors.add(newRoute);
             }
         }
-        neighbors.add(addBestRandomNeighbor(tabuList, changes));
+
+        List<Thread> threadList = new ArrayList<>(8);
+        for(int i=0; i<8;i++){
+            Thread thread = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    Route newRoute = addBestRandomNeighbor(tabuList, changes);
+                    synchronized (route){
+                        neighbors.add(newRoute);
+                    }
+                }
+            });
+            thread.start();
+            threadList.add(thread);
+        }
+        for (Thread thread : threadList) {
+            try {
+                thread.join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();  //Template
+            }
+        }
 
 
         Collections.sort(neighbors);
@@ -126,7 +147,7 @@ public class Route implements Comparable<Route>{
 
         // Add some random generated routes
         final Random rnd = new Random();
-        for(int i = 0; i<getRoute().size() * 1; i++){
+        for(int i = 0; i<getRoute().size() * 0.3; i++){
             List<Node> routeCopy = new ArrayList<>(route);
             int first = rnd.nextInt(routeCopy.size());
             int second = rnd.nextInt(routeCopy.size());
@@ -154,7 +175,9 @@ public class Route implements Comparable<Route>{
         }
 
         Collections.sort(neighbors);
-        changes.put(neighbors.get(0), innerChanges.get(neighbors.get(0)));
+        synchronized(this.route){
+            changes.put(neighbors.get(0), innerChanges.get(neighbors.get(0)));
+        }
 
         return neighbors.get(0);
     }
