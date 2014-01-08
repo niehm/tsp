@@ -208,7 +208,7 @@ public class TSP {
     private Route optimize(Route route){
         List<Node> routeList = route.getRoute();
         List<Node> modifiedList = new ArrayList<>(routeList.size());
-        int distance = 20;
+        int distance = 30;
 
         // checks all nodes or until a loop is resolved
         for (Node currentNode : routeList) {
@@ -220,17 +220,15 @@ public class TSP {
                 if(distance <= 4) { break; }
             }
 
-            Line2D line = new Line2D.Float(currentNode.getX(),
-                    currentNode.getY(),
-                    routeList.get(currentIndex+1).getX(),
-                    routeList.get(currentIndex+1).getY());
-
             int index = currentIndex + 2;
             for(int i=0;i<distance;i++){
                 Node node = routeList.get(index);
                 Node nodeNext = routeList.get(index+1);
 
-                if(line.intersectsLine(node.getX(), node.getY(), nodeNext.getX(), nodeNext.getY())){
+                if(Line2D.linesIntersect(nodeNext.getX(), nodeNext.getY(),
+                        node.getX(), node.getY(),
+                        currentNode.getX(), currentNode.getY(),
+                        routeList.get(currentIndex+1).getX(), routeList.get(currentIndex+1).getY())){
                     List<Node> part1 = Util.sublist(routeList, 0, currentIndex+1);
                     //reverse the looped part
                     List<Node> reversePart = Util.reverseList(Util.sublist(routeList, currentIndex+1, index+1));
