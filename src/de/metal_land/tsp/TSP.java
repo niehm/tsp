@@ -1,6 +1,5 @@
 package de.metal_land.tsp;
 
-import com.sun.javafx.binding.StringFormatter;
 import de.metal_land.Util;
 import lombok.*;
 import lombok.extern.java.Log;
@@ -155,7 +154,7 @@ public class TSP {
 
     @Getter(AccessLevel.NONE)
     @Setter(AccessLevel.NONE)
-    private Deque<Node[]> tabuList = new LinkedList<>();;
+    private Deque<Node[]> tabuList = new LinkedList<>();
 
     /**
      * Search in the Neighborhood for better routes, using a tabu list for already taken routes.

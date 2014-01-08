@@ -105,8 +105,8 @@ public class Route implements Comparable<Route>{
             }
         }
 
-        List<Thread> threadList = new ArrayList<>(8);
-        for(int i=0; i<8;i++){
+        List<Thread> threadList = new ArrayList<>(16);
+        for(int i=0; i<16;i++){
             Thread thread = new Thread(new Runnable() {
                 @Override
                 public void run() {
@@ -147,7 +147,7 @@ public class Route implements Comparable<Route>{
 
         // Add some random generated routes
         final Random rnd = new Random();
-        for(int i = 0; i<getRoute().size() * 0.3; i++){
+        for(int i = 0; i<getRoute().size()*0.5; i++){
             List<Node> routeCopy = new ArrayList<>(route);
             int first = rnd.nextInt(routeCopy.size());
             int second = rnd.nextInt(routeCopy.size());
