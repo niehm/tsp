@@ -8,6 +8,7 @@ import java.awt.geom.Line2D;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.util.*;
 
 /**
@@ -33,7 +34,17 @@ public class TSP {
 
     public static void main(String args[]){
         TSP problem = new TSP();
-        problem.readFromFile(new File("att532.tsp"));
+
+        ClassLoader cl = TSP.class.getClassLoader();
+        InputStream is = cl.getResourceAsStream("att532.tsp");
+        if(is == null){
+            try {
+                is = new FileInputStream("att532.tsp");
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();  //Template
+            }
+        }
+        problem.readFromFile(is);
 
         // Start UI thread
         Gui gui = new Gui(problem);
@@ -54,36 +65,31 @@ public class TSP {
      * Reads the Data from the given file.
      * @param srcFile The File to read.
      */
-    public void readFromFile(File srcFile){
-        try {
-            FileInputStream fr = new FileInputStream(srcFile);
-            Scanner scanner = new Scanner(fr);
+    public void readFromFile(InputStream srcFile){
+        Scanner scanner = new Scanner(srcFile);
 
-            boolean readCoordinates = false;
-            while (scanner.hasNextLine()){
-                String line = scanner.nextLine();
-                if(line.equals("NODE_COORD_SECTION")) {
-                    readCoordinates = true;
-                    continue;
-                } else if(line.equals("EOF")){
-                    break;
-                }
-
-                if(!readCoordinates){
-                    String[] splitted = line.split(" : ");
-                    if(splitted[0].equals("NAME")) {
-                        name = splitted[1];
-                    }
-                } else {
-                    String[] splitted = line.split(" ");
-                    nodes.add(new Node(splitted[0], Integer.parseInt(splitted[1]), Integer.parseInt(splitted[2])));
-                }
+        boolean readCoordinates = false;
+        while (scanner.hasNextLine()){
+            String line = scanner.nextLine();
+            if(line.equals("NODE_COORD_SECTION")) {
+                readCoordinates = true;
+                continue;
+            } else if(line.equals("EOF")){
+                break;
             }
 
-            setTabuListMaxSize((int) (nodes.size()* 0.15));
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            if(!readCoordinates){
+                String[] splitted = line.split(" : ");
+                if(splitted[0].equals("NAME")) {
+                    name = splitted[1];
+                }
+            } else {
+                String[] splitted = line.split(" ");
+                nodes.add(new Node(splitted[0], Integer.parseInt(splitted[1]), Integer.parseInt(splitted[2])));
+            }
         }
+
+        setTabuListMaxSize((int) (nodes.size()* 0.15));
     }
 
     /**
